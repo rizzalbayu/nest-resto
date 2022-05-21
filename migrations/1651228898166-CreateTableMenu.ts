@@ -23,7 +23,7 @@ export class CreateTableMenu1651228898166 implements MigrationInterface {
             name: 'description',
             type: 'varchar',
             length: '255',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'created_by',
@@ -41,7 +41,7 @@ export class CreateTableMenu1651228898166 implements MigrationInterface {
             name: 'updated_by',
             type: 'varchar',
             length: '255',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'updated_at',
@@ -54,12 +54,12 @@ export class CreateTableMenu1651228898166 implements MigrationInterface {
             name: 'deleted_by',
             type: 'varchar',
             length: '255',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'deleted_at',
             type: 'timestamp',
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'version',
