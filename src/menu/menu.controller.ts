@@ -7,7 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateMenuDto, UpdateMenuDto } from './dto/menu.dto';
+import { BaseResponseDto } from 'src/common/responses/base-response.dto';
+import { CreateMenuDto, MenuDto, UpdateMenuDto } from './dto/menu.dto';
 import { MenuService } from './menu.service';
 
 @Controller('menu')
@@ -20,26 +21,45 @@ export class MenuController {
   }
 
   @Post()
-  async create(@Body() body: CreateMenuDto) {
+  async create(@Body() body: CreateMenuDto): Promise<BaseResponseDto<MenuDto>> {
     const data = await this.menuService.addData(body);
-    return data;
+    return new BaseResponseDto({
+      success: data ? true : false,
+      message: null,
+      data: data ? MenuDto.fromEmtity(data) : null,
+    });
   }
 
   @Get('/:id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<BaseResponseDto<MenuDto>> {
     const data = await this.menuService.findOne(id);
-    return data;
+    return new BaseResponseDto({
+      success: data ? true : false,
+      message: null,
+      data: data ? MenuDto.fromEmtity(data) : null,
+    });
   }
 
   @Patch('/:id')
-  async patch(@Param('id') id: string, @Body() body: UpdateMenuDto) {
+  async patch(
+    @Param('id') id: string,
+    @Body() body: UpdateMenuDto,
+  ): Promise<BaseResponseDto<MenuDto>> {
     const data = await this.menuService.update(id, body);
-    return data;
+    return new BaseResponseDto({
+      success: data ? true : false,
+      message: null,
+      data: data ? MenuDto.fromEmtity(data) : null,
+    });
   }
 
   @Delete('/:id')
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string): Promise<BaseResponseDto<string>> {
     const result = await this.menuService.delete(id);
-    return result;
+    return new BaseResponseDto({
+      success: result == 'SUCCESS' ? true : false,
+      message: result,
+      data: null,
+    });
   }
 }

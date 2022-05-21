@@ -35,11 +35,15 @@ export class MenuService {
   }
 
   async update(id: string, data: UpdateMenuDto) {
-    const menu = new Menu();
-    menu.name = data.name;
-    menu.description = data.description;
-    menu.updatedBy = data.user;
-    return await this.menuRepository.update(id, menu);
+    const menu = await this.findOne(id);
+    if (menu) {
+      menu.name = data.name;
+      menu.description = data.description;
+      menu.updatedBy = data.user;
+      const result = await this.menuRepository.update(id, menu);
+      console.log(result);
+      return menu;
+    }
   }
 
   async delete(id: string) {
