@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 
 export interface Response<T> {
   //   statusCode: number;
-  success: string;
+  success: boolean;
   message: string;
   data: T;
 }

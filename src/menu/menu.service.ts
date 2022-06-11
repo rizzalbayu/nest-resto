@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Page } from 'src/common/model/page';
 import { PageUtil } from 'src/common/util/page.util';
@@ -12,8 +12,7 @@ export class MenuService {
     @InjectRepository(Menu) private readonly menuRepository: Repository<Menu>,
   ) {}
 
-  async getAll() {
-    const pageUtil = new PageUtil(1, 10);
+  async getAll(pageUtil: PageUtil) {
     const [results, total] = await this.menuRepository
       .createQueryBuilder('menus')
       .andWhere('menus.deletedAt IS NULL')
@@ -34,34 +33,40 @@ export class MenuService {
 
   async findOne(id: string) {
     return await this.menuRepository
-      .createQueryBuilder('menus')
-      .andWhere('menus.deletedAt IS NULL')
-      .andWhere('menus.id = :menuId', { menuId: id })
+      .createQueryBuilder('menu')
+      .andWhere('menu.deletedAt IS NULL')
+      .andWhere('menu.id = :menuId', { menuId: id })
       .getOne();
   }
 
   async update(id: string, data: UpdateMenuDto) {
-    const menu = await this.findOne(id);
+    let menu = new Menu();
+    menu = await this.menuRepository
+      .createQueryBuilder('menu')
+      .where('menu.id = :menuId', { menuId: id })
+      .andWhere('menu.deletedAt IS NULL')
+      .getOne();
     if (menu) {
       menu.name = data.name;
       menu.description = data.description;
       menu.updatedBy = data.user;
-      const result = await this.menuRepository.update(id, menu);
-      console.log(result);
+      await this.menuRepository.update(id, menu);
       return menu;
     }
   }
 
   async delete(id: string) {
-    const menu = await this.findOne(id);
+    const menu = await this.menuRepository
+      .createQueryBuilder('menu')
+      .where('menu.id = :menuId', { menuId: id })
+      .andWhere('menu.deletedAt IS NULL')
+      .getOne();
     if (menu) {
       menu.updatedBy = 'user@gmail.com';
       menu.deletedBy = 'user@gmail.com';
       menu.deletedAt = new Date(Date.now());
-      await this.menuRepository.update('id', menu);
-      return 'SUCCESS';
-    } else {
-      return 'DATA NOT FOUND';
+      await this.menuRepository.update(id, menu);
+      return menu;
     }
   }
 }
