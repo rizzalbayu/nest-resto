@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Page } from 'src/common/model/page';
+import { PageUtil } from 'src/common/util/page.util';
 import { Repository } from 'typeorm';
 import { CreateMenuDto, UpdateMenuDto } from './dto/menu.dto';
 import { Menu } from './entities/menu.entity';
@@ -11,10 +13,14 @@ export class MenuService {
   ) {}
 
   async getAll() {
-    return await this.menuRepository
+    const pageUtil = new PageUtil(1, 10);
+    const [results, total] = await this.menuRepository
       .createQueryBuilder('menus')
       .andWhere('menus.deletedAt IS NULL')
-      .getMany();
+      .take(pageUtil.size)
+      .skip(pageUtil.skipRecord())
+      .getManyAndCount();
+    return new Page(results, total, pageUtil);
   }
 
   async addData(data: CreateMenuDto) {
