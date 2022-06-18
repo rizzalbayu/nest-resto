@@ -26,6 +26,9 @@ export class MenuService {
     const menu = new Menu();
     menu.name = data.name;
     menu.description = data.description;
+    menu.price = data.price;
+    menu.originalPrice = data.price;
+    menu.type = data.type;
     menu.createdBy = user;
     menu.updatedBy = user;
     return await this.menuRepository.save(menu);
@@ -50,6 +53,8 @@ export class MenuService {
       menu.name = data.name;
       menu.description = data.description;
       menu.updatedBy = user;
+      menu.price = data.price;
+      menu.type = data.type;
       await this.menuRepository.update(id, menu);
       return menu;
     }

@@ -1,3 +1,4 @@
+import { type } from 'os';
 import {
   Column,
   CreateDateColumn,
@@ -5,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { MenuType } from './menu-type.enum';
 
 @Entity({ name: 'menu' })
 export class Menu {
@@ -41,4 +43,23 @@ export class Menu {
 
   @Column({ name: 'version', default: 1, nullable: true })
   version: number;
+
+  @Column({ name: 'price' })
+  price: number;
+
+  @Column({ name: 'original_price' })
+  originalPrice: number;
+
+  @Column({
+    name: 'is_active',
+    type: 'bit',
+    transformer: { from: (v: Buffer) => !!v.readInt8(0), to: (v) => v },
+  })
+  isActive: boolean;
+
+  @Column({ name: 'image' })
+  image: string;
+
+  @Column({ name: 'type', default: MenuType.OTHER })
+  type: MenuType;
 }
