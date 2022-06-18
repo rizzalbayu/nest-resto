@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { TransformInterceptor } from 'src/common/interception/transform.interceptor';
 import { AuthService } from './auth.service';
-import { registerDto } from './dto/auth.dto';
+import { loginDto, registerDto } from './dto/auth.dto';
 
 @Controller('auth')
 @UseInterceptors(TransformInterceptor)
@@ -30,7 +30,7 @@ export class AuthController {
     return {
       success: data ? true : false,
       message: null,
-      data: data,
+      data: data ? loginDto.fromEntity(data.user, data.token) : null,
     };
   }
 }

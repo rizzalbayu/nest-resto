@@ -37,7 +37,8 @@ export class AuthService {
     if (!user) throw new BadRequestException('invalid username or password');
     if (!(await bcrypt.compare(body.password, user.password)))
       throw new BadRequestException('invalid username or password');
-    return this.signUser(user);
+    const token = this.signUser(user);
+    return { user: user, token: token };
   }
 
   signUser(user: User) {
@@ -45,5 +46,16 @@ export class AuthService {
       sub: user.id,
       email: user.email,
     });
+  }
+
+  async findRole(email: string) {
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.role')
+      .addSelect('user.email')
+      .where('user.email = :email', { email })
+      .andWhere('user.isActive = 1')
+      .andWhere('user.deletedAt is NULL')
+      .getOne();
   }
 }

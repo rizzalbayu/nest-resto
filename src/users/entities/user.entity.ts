@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { UserRole } from './role.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -51,4 +52,10 @@ export class User {
 
   @Column({ name: 'version', default: 1, nullable: true })
   version: number;
+
+  @Column({ name: 'role', default: UserRole.USER })
+  role: UserRole;
+
+  @Column({ name: 'phone_number' })
+  phoneNumber: string;
 }

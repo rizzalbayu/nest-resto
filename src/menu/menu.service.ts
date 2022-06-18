@@ -22,12 +22,12 @@ export class MenuService {
     return new Page(results, total, pageUtil);
   }
 
-  async addData(data: CreateMenuDto) {
+  async addData(data: CreateMenuDto, user: string) {
     const menu = new Menu();
     menu.name = data.name;
     menu.description = data.description;
-    menu.createdBy = data.user;
-    menu.updatedBy = data.user;
+    menu.createdBy = user;
+    menu.updatedBy = user;
     return await this.menuRepository.save(menu);
   }
 
@@ -39,7 +39,7 @@ export class MenuService {
       .getOne();
   }
 
-  async update(id: string, data: UpdateMenuDto) {
+  async update(id: string, data: UpdateMenuDto, user: string) {
     let menu = new Menu();
     menu = await this.menuRepository
       .createQueryBuilder('menu')
@@ -49,21 +49,21 @@ export class MenuService {
     if (menu) {
       menu.name = data.name;
       menu.description = data.description;
-      menu.updatedBy = data.user;
+      menu.updatedBy = user;
       await this.menuRepository.update(id, menu);
       return menu;
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string, user: string) {
     const menu = await this.menuRepository
       .createQueryBuilder('menu')
       .where('menu.id = :menuId', { menuId: id })
       .andWhere('menu.deletedAt IS NULL')
       .getOne();
     if (menu) {
-      menu.updatedBy = 'user@gmail.com';
-      menu.deletedBy = 'user@gmail.com';
+      menu.updatedBy = user;
+      menu.deletedBy = user;
       menu.deletedAt = new Date(Date.now());
       await this.menuRepository.update(id, menu);
       return menu;
