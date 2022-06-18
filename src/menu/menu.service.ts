@@ -16,6 +16,7 @@ export class MenuService {
     const [results, total] = await this.menuRepository
       .createQueryBuilder('menus')
       .andWhere('menus.deletedAt IS NULL')
+      .orderBy('menus.createdAt', 'DESC')
       .take(pageUtil.size)
       .skip(pageUtil.skipRecord())
       .getManyAndCount();
@@ -55,6 +56,7 @@ export class MenuService {
       menu.updatedBy = user;
       menu.price = data.price;
       menu.type = data.type;
+      menu.version++;
       await this.menuRepository.update(id, menu);
       return menu;
     }
