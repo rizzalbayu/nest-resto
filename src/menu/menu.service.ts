@@ -12,7 +12,7 @@ export class MenuService {
     @InjectRepository(Menu) private readonly menuRepository: Repository<Menu>,
   ) {}
 
-  async getAll(pageUtil: PageUtil) {
+  async getAll(pageUtil: PageUtil): Promise<Page<Menu>> {
     const [results, total] = await this.menuRepository
       .createQueryBuilder('menus')
       .andWhere('menus.deletedAt IS NULL')
@@ -23,7 +23,7 @@ export class MenuService {
     return new Page(results, total, pageUtil);
   }
 
-  async addData(data: CreateMenuDto, user: string) {
+  async addData(data: CreateMenuDto, user: string): Promise<Menu> {
     const menu = new Menu();
     menu.name = data.name;
     menu.description = data.description;
@@ -35,7 +35,7 @@ export class MenuService {
     return await this.menuRepository.save(menu);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<Menu> {
     return await this.menuRepository
       .createQueryBuilder('menu')
       .andWhere('menu.deletedAt IS NULL')
@@ -43,7 +43,7 @@ export class MenuService {
       .getOne();
   }
 
-  async update(id: string, data: UpdateMenuDto, user: string) {
+  async update(id: string, data: UpdateMenuDto, user: string): Promise<Menu> {
     let menu = new Menu();
     menu = await this.menuRepository
       .createQueryBuilder('menu')
@@ -62,7 +62,7 @@ export class MenuService {
     }
   }
 
-  async delete(id: string, user: string) {
+  async delete(id: string, user: string): Promise<Menu> {
     const menu = await this.menuRepository
       .createQueryBuilder('menu')
       .where('menu.id = :menuId', { menuId: id })
