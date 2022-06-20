@@ -21,7 +21,7 @@ export class OrderService {
     const user = await this.userService.findByEmail(userEmail);
     const order = new Order();
     const orderList = [];
-    const orderNumber = Math.random().toString(36).slice(-10).toUpperCase();
+    const orderNumber = await this.getOrderNumber();
 
     for (const menus of body.orderList) {
       const menu = await this.menuService.findOne(menus.menuId);
@@ -47,5 +47,28 @@ export class OrderService {
       console.log(error);
       throw new BadRequestException('Order Failed');
     }
+  }
+
+  async getOrderNumber(): Promise<string> {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    let orderNumber = await this.setOrderNumber(date);
+    let data = await this.getOrderByNumber(orderNumber);
+    while (data) {
+      orderNumber = await this.setOrderNumber(date);
+      data = await this.getOrderByNumber(orderNumber);
+    }
+    return orderNumber;
+  }
+
+  async getOrderByNumber(orderNumber: string): Promise<Order> {
+    return await this.orderRepository
+      .createQueryBuilder('order')
+      .where('order.orderNumber = :orderNumber', { orderNumber })
+      .getOne();
+  }
+
+  async setOrderNumber(date: string): Promise<string> {
+    const randomNumber = Math.random().toString(36).slice(-7).toUpperCase();
+    return date + randomNumber;
   }
 }
