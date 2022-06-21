@@ -4,6 +4,7 @@ import { Page } from 'src/common/model/page';
 import { PageUtil } from 'src/common/util/page.util';
 import { Repository } from 'typeorm';
 import { CreateMenuDto, UpdateMenuDto } from './dto/menu.dto';
+import { MenuType } from './entities/menu-type.enum';
 import { Menu } from './entities/menu.entity';
 
 @Injectable()
@@ -12,11 +13,36 @@ export class MenuService {
     @InjectRepository(Menu) private readonly menuRepository: Repository<Menu>,
   ) {}
 
-  async getAll(pageUtil: PageUtil): Promise<Page<Menu>> {
-    const [results, total] = await this.menuRepository
+  async getAll(
+    pageUtil: PageUtil,
+    type: MenuType,
+    active: string,
+    order: string,
+    direction: string,
+  ): Promise<Page<Menu>> {
+    let query = this.menuRepository
       .createQueryBuilder('menus')
-      .andWhere('menus.deletedAt IS NULL')
-      .orderBy('menus.createdAt', 'DESC')
+      .andWhere('menus.deletedAt IS NULL');
+    if (type) query = query.andWhere('menus.type = :type', { type });
+
+    if (active)
+      query = query.andWhere('menus.isActive = :active', {
+        active: active && active.toLowerCase() == 'true' ? 1 : 0,
+      });
+
+    if (order) {
+      if (order == 'createdAt')
+        query = query.addOrderBy(
+          'menus.createdAt',
+          direction.toLowerCase() == 'desc' ? 'DESC' : 'ASC',
+        );
+      if (order == 'price')
+        query = query.addOrderBy(
+          'menus.price',
+          direction.toLowerCase() == 'desc' ? 'DESC' : 'ASC',
+        );
+    }
+    const [results, total] = await query
       .take(pageUtil.size)
       .skip(pageUtil.skipRecord())
       .getManyAndCount();

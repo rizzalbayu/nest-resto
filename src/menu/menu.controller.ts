@@ -22,6 +22,7 @@ import { MenuService } from './menu.service';
 import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { UserRole } from 'src/users/entities/role.enum';
+import { MenuType } from './entities/menu-type.enum';
 
 @Controller('menu')
 @UseInterceptors(TransformInterceptor)
@@ -31,8 +32,21 @@ export class MenuController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  async findAll(@Query('page') page = 1, @Query('size') size = 10) {
-    const data = await this.menuService.getAll(new PageUtil(page, size));
+  async findAll(
+    @Query('page') page = 1,
+    @Query('size') size = 10,
+    @Query('type') type: MenuType,
+    @Query('active') active: string,
+    @Query('order') order = 'createdAt',
+    @Query('direction') direction = 'desc',
+  ) {
+    const data = await this.menuService.getAll(
+      new PageUtil(page, size),
+      type,
+      active,
+      order,
+      direction,
+    );
     return {
       success: data ? true : false,
       message: null,
