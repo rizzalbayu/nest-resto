@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { OrderStatus } from './order-status.enum';
+import { OrderType } from './order-type.enum';
 import { OrderItem } from './order_item.entity';
 
 @Entity({ name: 'orders' })
@@ -54,7 +55,10 @@ export class Order {
   orderNumber: string;
 
   @OneToMany((type) => OrderItem, (orderItem) => orderItem.order, {
-    cascade: ['insert'],
+    cascade: ['insert', 'update'],
   })
   orderItems: OrderItem[];
+
+  @Column({ name: 'type' })
+  type: OrderType;
 }

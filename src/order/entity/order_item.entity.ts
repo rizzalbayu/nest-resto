@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ItemStatus } from './item-status.enum';
 import { Order } from './order.entity';
 
 @Entity({ name: 'order_items' })
@@ -54,4 +55,7 @@ export class OrderItem {
 
   @Column({ name: 'quantity' })
   quantity: number;
+
+  @Column({ name: 'status', default: ItemStatus.WAITING })
+  status: ItemStatus;
 }

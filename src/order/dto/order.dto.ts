@@ -1,4 +1,6 @@
-import { Menu } from 'src/menu/entities/menu.entity';
+import { ItemStatus } from '../entity/item-status.enum';
+import { OrderStatus } from '../entity/order-status.enum';
+import { OrderType } from '../entity/order-type.enum';
 import { Order } from '../entity/order.entity';
 import { OrderItem } from '../entity/order_item.entity';
 
@@ -6,7 +8,8 @@ export class CreateOrderDto {
   orderId?: string;
   orderNumber?: string;
   orderList: CreateOrderItemDto[];
-  status?: string;
+  status?: OrderStatus;
+  type?: OrderType;
   createdAt?: Date;
 }
 
@@ -15,11 +18,16 @@ export class CreateOrderItemDto {
   quantity: number;
 }
 
+export class UpdateItemStatus {
+  status: ItemStatus;
+}
+
 export class OrderDto {
   orderId: string;
   orderNumber: string;
   orderList: OrderItem[];
   user: string;
+  type: string;
   status: string;
   total: number;
   createdAt: Date;
@@ -39,6 +47,7 @@ export class OrderDto {
       orderNumber: order.orderNumber,
       user: order.user.fullName,
       orderList: order.orderItems ? orderList : null,
+      type: order.type,
       status: order.status,
       total: total,
       createdAt: order.createdAt,
