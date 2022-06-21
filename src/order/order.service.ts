@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Page } from 'src/common/model/page';
+import { PageUtil } from 'src/common/util/page.util';
 import { MenuService } from 'src/menu/menu.service';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -146,5 +148,35 @@ export class OrderService {
       .innerJoinAndSelect('order.orderItems', 'orderItems')
       .where('order.id = :orderId', { orderId })
       .getOne();
+  }
+
+  async getAllOrder(
+    pageUtil: PageUtil,
+    status: OrderStatus,
+    order: string,
+    direction: string,
+  ): Promise<Page<Order>> {
+    let query = this.orderRepository
+      .createQueryBuilder('order')
+      .innerJoinAndSelect(
+        'order.orderItems',
+        'orderItems',
+        'orderItems.deletedAt IS NULL',
+      )
+      .innerJoinAndSelect('order.user', 'user', 'user.deletedAt IS NULL')
+      .innerJoinAndSelect('orderItems.menu', 'menus', 'menus.deletedAt IS NULL')
+      .where('order.deletedAt IS NULL');
+    if (status) query = query.andWhere('order.status = :status', { status });
+    if (order) {
+      query = query.addOrderBy(
+        'order.createdAt',
+        direction.toLowerCase() == 'desc' ? 'DESC' : 'ASC',
+      );
+    }
+    const [results, total] = await query
+      .take(pageUtil.size)
+      .skip(pageUtil.skipRecord())
+      .getManyAndCount();
+    return new Page(results, total, pageUtil);
   }
 }

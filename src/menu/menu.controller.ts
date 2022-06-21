@@ -37,7 +37,7 @@ export class MenuController {
       success: data ? true : false,
       message: null,
       data: PageResponseDto.fromPage<Menu, MenuDto>(data, (item) => {
-        return MenuDto.fromEmtity(item);
+        return MenuDto.fromEntity(item);
       }),
     };
   }
@@ -50,7 +50,7 @@ export class MenuController {
     return {
       success: data ? true : false,
       message: null,
-      data: data ? MenuDto.fromEmtity(data) : null,
+      data: data ? MenuDto.fromEntity(data) : null,
     };
   }
 
@@ -63,7 +63,7 @@ export class MenuController {
     return {
       success: data ? true : false,
       message: null,
-      data: data ? MenuDto.fromEmtity(data) : null,
+      data: data ? MenuDto.fromEntity(data) : null,
     };
   }
 
@@ -80,7 +80,7 @@ export class MenuController {
     return {
       success: data ? true : false,
       message: null,
-      data: data ? MenuDto.fromEmtity(data) : null,
+      data: data ? MenuDto.fromEntity(data) : null,
     };
   }
 
