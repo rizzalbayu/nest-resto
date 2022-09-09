@@ -9,7 +9,13 @@ import { AuthModule } from './auth/auth.module';
 import { OrderModule } from './order/order.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot({}), MenuModule, UsersModule, AuthModule, OrderModule],
+  imports: [
+    TypeOrmModule.forRoot({}),
+    MenuModule,
+    UsersModule,
+    AuthModule,
+    OrderModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

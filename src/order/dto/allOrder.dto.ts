@@ -10,6 +10,7 @@ export class AllOrderDto {
   type: string;
   status: string;
   total: number;
+  queueNumber: number;
   createdAt: Date;
   constructor(partial: Partial<OrderDto>) {
     Object.assign(this, partial);
@@ -30,6 +31,7 @@ export class AllOrderDto {
       type: order.type,
       status: order.status,
       total: total,
+      queueNumber: order.queueNumber,
       createdAt: order.createdAt,
     });
   }

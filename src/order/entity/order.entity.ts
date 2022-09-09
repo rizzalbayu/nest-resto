@@ -61,4 +61,7 @@ export class Order {
 
   @Column({ name: 'type' })
   type: OrderType;
+
+  @Column({ name: 'queue_number' })
+  queueNumber: number;
 }

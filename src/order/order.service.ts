@@ -15,6 +15,7 @@ import { OrderStatus } from './entity/order-status.enum';
 import { OrderType } from './entity/order-type.enum';
 import { Order } from './entity/order.entity';
 import { OrderItem } from './entity/order_item.entity';
+import * as moment from 'moment';
 
 @Injectable()
 export class OrderService {
@@ -32,6 +33,8 @@ export class OrderService {
     const order = new Order();
     const orderList = [];
     const orderNumber = await this.getOrderNumber();
+    const queueNumber = await this.getQueueNumber();
+    console.log(`queue number = ${queueNumber}`);
 
     for (const menus of body.orderList) {
       const menu = await this.menuService.findOne(menus.menuId);
@@ -57,6 +60,7 @@ export class OrderService {
       order.orderNumber = orderNumber;
       order.orderItems = orderList;
       order.status = body.status ? body.status : OrderStatus.WAITINIG;
+      order.queueNumber = queueNumber;
       await this.orderRepository.save(order);
       return order;
     } catch (error) {
@@ -91,6 +95,23 @@ export class OrderService {
   async setOrderNumber(date: string): Promise<string> {
     const randomNumber = Math.random().toString(36).slice(-7).toUpperCase();
     return date + randomNumber;
+  }
+
+  async getQueueNumber(): Promise<number> {
+    const start = moment().startOf('day').format();
+    const end = moment().endOf('day').format();
+    let queueNumber = 1;
+    const data = await this.orderRepository
+      .createQueryBuilder('order')
+      .limit(1)
+      .orderBy('order.createdAt', 'DESC')
+      .andWhere('order.createdAt BETWEEN :start AND :end', {
+        end: end,
+        start: start,
+      })
+      .getOne();
+    if (data) queueNumber = data.queueNumber != null ? data.queueNumber + 1 : 1;
+    return queueNumber;
   }
 
   async updateWaitingOrder(itemId: string, user: string, status: ItemStatus) {
